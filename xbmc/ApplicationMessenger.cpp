@@ -71,6 +71,8 @@
   #include "xbmc/android/activity/XBMCApp.h"
 #endif
 
+#include "shutdownHookCheck.h"
+
 using namespace PVR;
 using namespace std;
 using namespace MUSIC_INFO;
@@ -231,24 +233,39 @@ void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
         switch (CSettings::Get().GetInt("powermanagement.shutdownstate"))
         {
           case POWERSTATE_SHUTDOWN:
-            Powerdown();
-            break;
+            if(shutdownHookCheck())
+            {
+              Powerdown();
+              break;
+            }
 
           case POWERSTATE_SUSPEND:
-            Suspend();
-            break;
+            if(shutdownHookCheck())
+            {
+              Suspend();
+              break;
+            }
 
           case POWERSTATE_HIBERNATE:
-            Hibernate();
-            break;
+            if(shutdownHookCheck())
+            {
+              Hibernate();
+              break;
+            }
 
           case POWERSTATE_QUIT:
-            Quit();
-            break;
+            if(shutdownHookCheck())
+            {
+              Quit();
+              break;
+            }
 
           case POWERSTATE_MINIMIZE:
-            Minimize();
-            break;
+            if(shutdownHookCheck())
+            {
+              Minimize();
+              break;
+            }
 
           case TMSG_RENDERER_FLUSH:
             g_renderManager.Flush();
@@ -259,36 +276,51 @@ void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
 
     case TMSG_POWERDOWN:
       {
-        g_application.Stop(EXITCODE_POWERDOWN);
-        g_powerManager.Powerdown();
+        if(shutdownHookCheck())
+        {
+          g_application.Stop(EXITCODE_POWERDOWN);
+          g_powerManager.Powerdown();
+        }
       }
       break;
 
     case TMSG_QUIT:
       {
-        g_application.Stop(EXITCODE_QUIT);
+        if(shutdownHookCheck())
+        {
+          g_application.Stop(EXITCODE_QUIT);
+        }
       }
       break;
 
     case TMSG_HIBERNATE:
       {
-        g_PVRManager.SetWakeupCommand();
-        g_powerManager.Hibernate();
+        if(shutdownHookCheck())
+        {
+          g_PVRManager.SetWakeupCommand();
+          g_powerManager.Hibernate();
+        }
       }
       break;
 
     case TMSG_SUSPEND:
       {
-        g_PVRManager.SetWakeupCommand();
-        g_powerManager.Suspend();
+        if(shutdownHookCheck())
+        {
+          g_PVRManager.SetWakeupCommand();
+          g_powerManager.Suspend();
+        }
       }
       break;
 
     case TMSG_RESTART:
     case TMSG_RESET:
       {
-        g_application.Stop(EXITCODE_REBOOT);
-        g_powerManager.Reboot();
+        if(shutdownHookCheck())
+        {
+          g_application.Stop(EXITCODE_REBOOT);
+          g_powerManager.Reboot();
+        }
       }
       break;
 
