@@ -158,20 +158,26 @@ bool shutdownHookCheck()
 
 //    cout << "shutdownStopped: >" << shutdownStopped << "<\n";   // debug
 
-    if(!strcmp(pdir->d_name, "."))      continue;
-    if(!strcmp(pdir->d_name, ".."))     continue;
-    if(!strcmp(pdir->d_name, "README")) continue;
-    if(shutdownStopped == 1)            continue;
+    if(!strcmp(pdir->d_name, "."))          continue;
+    if(!strcmp(pdir->d_name, ".."))         continue;
+    if(!strcmp(pdir->d_name, ".gitignore")) continue;
+    if(!strcmp(pdir->d_name, "README"))     continue;
+    if(shutdownStopped == 1)                continue;
 
-
-    int exitCode;
-
-//    cout << "scriptName: " << pdir->d_name << "\n";   // debug
 
     string scriptName   = pdir->d_name;
     string combinedCmd  = dirHooks+scriptName;
 
-    exitCode = system(combinedCmd.c_str());
+//    cout << "scriptName: " << pdir->d_name << "\n";   // debug
+
+    if(!fileIsExecutable(combinedCmd))
+    {
+      sendMSGtoXBMC("shutdown-hook-check: ",  scriptName + ": can NOT be executed");
+      return false;
+    }
+
+
+    int exitCode = system(combinedCmd.c_str());
 
     if(exitCode == 0)
     {
