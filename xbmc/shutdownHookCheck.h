@@ -136,7 +136,7 @@ bool shutdownHookCheck()
     dirHooks  +=  userNameDefault;
   }
 
-  dirHooks    +=  "/shutdown-hooks/";
+  dirHooks    +=  "/xbmcShutdownHooks/hooks-enabled/";
 /*
 //////////////////////////////////////////////////
 */
