@@ -31,6 +31,9 @@ config.log
 *.bak
 *.apk
 *.class
+*.tgz
+*.deb
+description-pak
 
 # Windows specific generated files
 *.exp
