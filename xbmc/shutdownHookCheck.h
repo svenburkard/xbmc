@@ -2,7 +2,7 @@
 //
 // @AUTHOR: Sven Burkard <dev@sven-burkard.de>
 // @DESC..: checks for user defined xbmc-shutdown-hooks in a predefined hook directory.
-// @DESC..: if one of the hook scripts returns an exit code not 0, 
+// @DESC..: if one of the hook scripts returns an exit code not 0,
 // @DESC..: the xbmc shutdown will be stopped and the user will be informed via xbmc-notifications
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -81,7 +81,7 @@ bool sendMSGtoXBMC(string title, string message)
 
 /*
 //////////////////////////////////////////////////
-  debug 
+  debug
 //////////////////////////////////////////////////
 */
 //  cout << "  xbmcHost:    " << xbmcHost << "\n";
