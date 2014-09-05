@@ -17,14 +17,13 @@
 using namespace std;
 
 
-
 ////////////////////////////////////////////////////////
-char* getUserName()
+char* getHomeDirectory()
 {
 ////////////////////////////////////////////////////////
-    char *u=getenv("USER");
+  char *h=getenv("HOME");
 
-    return u;
+  return h;
 }
 
 
@@ -120,23 +119,21 @@ bool shutdownHookCheck()
   create a path-variable of the hook scripts dir
 //////////////////////////////////////////////////
 */
-  dirHooks    +=  "/home/";
+  char* homeDirectory = getHomeDirectory();
 
-  char* userName = getUserName();
-
-  if(userName != NULL)
+  if(homeDirectory != NULL)
   {
-    dirHooks  +=  userName;
+    dirHooks    = homeDirectory;
   }
   else
   {
-    string userNameDefault  = "xbmc";
-
-    cout << "ERROR: userName var is undef => using default userName (" << userNameDefault << ")!!!\n";
-    dirHooks  +=  userNameDefault;
+    dirHooks    = "/home/xbmc";
+    cout << "ERROR: homeDirectory var is undef => using default homeDirectory!!!\n";
   }
 
   dirHooks    +=  "/xbmcShutdownHooks/hooks-enabled/";
+
+  //cout << "DEBUG: >>>" << dirHooks << "<<<<<\n";
 /*
 //////////////////////////////////////////////////
 */
