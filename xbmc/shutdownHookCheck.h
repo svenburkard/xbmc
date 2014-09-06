@@ -6,13 +6,15 @@
 // @DESC..: the xbmc shutdown will be stopped and the user will be informed via xbmc-notifications
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
+// system includes
 #include <cstdlib>    // system / getenv
 #include <iostream>   // cout
 #include <dirent.h>   // dir...
 #include <string.h>   // strcmp
 #include <sys/stat.h> // stat
 
+// xbmc includes
+#include "dialogs/GUIDialogKaiToast.h"
 
 using namespace std;
 
@@ -44,63 +46,6 @@ bool fileIsExecutable(const string file)
   }
 
   return false;
-}
-
-
-////////////////////////////////////////////////////////
-bool sendMSGtoXBMC(string title, string message)
-{
-////////////////////////////////////////////////////////
-
-  string curl         = "/usr/bin/curl";
-
-  if(!fileIsExecutable(curl))
-  {
-    cout << "ERROR: file (" + curl + ") can NOT be executed\n";
-    return false;
-  }
-
-  string xbmcUser     = "xbmc";
-  string xbmcPassword = "xbmc";
-  string xbmcHost     = "localhost";
-  string xbmcPort     = "8080";
-
-  string cmd;
-
-  cmd +=  curl;
-  cmd +=  " ";
-  cmd +=  "-s ";
-  cmd +=  "-u \"" + xbmcUser + ":" + xbmcPassword + "\" ";
-  cmd +=  "-H \"Content-type: application/json\" ";
-  cmd +=  "-X POST ";
-  cmd +=  "-d '{\"id\":1,\"jsonrpc\":\"2.0\",\"method\":\"GUI.ShowNotification\",\"params\":{\"title\":\"" + title + "\",\"message\":\"" + message + "\"}}' ";
-  cmd +=  "http://" + xbmcHost + ":" + xbmcPort + "/jsonrpc ";
-  cmd +=  "1>/dev/null ";
-
-
-/*
-//////////////////////////////////////////////////
-  debug
-//////////////////////////////////////////////////
-*/
-//  cout << "  xbmcHost:    " << xbmcHost << "\n";
-//  cout << "  xbmcPort:    " << xbmcPort << "\n";
-//  cout << "  cmd:         " << cmd << "\n";
-//  cout << "  title:       " << title << "\n";
-//  cout << "  message:     " << message << "\n";
-/*
-//////////////////////////////////////////////////
-*/
-
-
-  int exitCode = system(cmd.c_str());
-
-  if(exitCode != 0)
-  {
-    cout << "ERROR: no valid exitCode @ sendMSGtoXBMC()\n";
-  }
-
-  return true;
 }
 
 
@@ -142,11 +87,7 @@ bool shutdownHookCheck()
 
   if(!dir)
   {
-    if(!sendMSGtoXBMC("shutdown-hook: " + dirHooks, "failed to open hooks directory, shutdown anyway"))
-    {
-      cout << "ERROR: sendMSGtoXBMC failed!!!!!!!\n";
-    }
-
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, "shutdown-hook: " + dirHooks, "failed to open hooks directory, shutdown anyway");
     return true;    // return true because: a missing shutdown hook dir should't be a reason to abort exit/shutdown
   }
 
@@ -169,7 +110,7 @@ bool shutdownHookCheck()
 
     if(!fileIsExecutable(combinedCmd))
     {
-      sendMSGtoXBMC("shutdown-hook-check: ",  scriptName + ": can NOT be executed");
+      CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, "shutdown-hook-check: ", scriptName + ": can NOT be executed");
       return false;
     }
 
@@ -178,36 +119,17 @@ bool shutdownHookCheck()
 
     if(exitCode == 0)
     {
-
-      if(sendMSGtoXBMC("shutdown-hook-check: ",  scriptName + ": ok"))
-      {
-        cout << "sendMSGtoXBMC was successfull\n";
-      }
-      else
-      {
-        cout << "ERROR: sendMSGtoXBMC failed!!!!!!!\n";
-      }
-
+      CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, "shutdown-hook-check: ", scriptName + ": ok");
     }
     else
     {
-
       shutdownStopped = 1;
 //      cout << "setting shutdownStopped to 1 !!!\n";   // debug
 
-      if(sendMSGtoXBMC("shutdown-hook-check: ", "shutdown stopped by " + scriptName))
-      {
-        cout << "sendMSGtoXBMC was successfull\n";
-      }
-      else
-      {
-        cout << "ERROR: sendMSGtoXBMC failed!!!!!!!\n";
-      }
-
+      CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, "shutdown-hook-check: ", "shutdown stopped by " + scriptName);
 
       closedir(dir);
       return false;
-
     }
 
   }
