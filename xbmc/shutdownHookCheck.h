@@ -8,7 +8,7 @@
 
 // system includes
 #include <cstdlib>    // system / getenv
-#include <iostream>   // cout
+//#include <iostream>   // cout
 #include <dirent.h>   // dir...
 #include <string.h>   // strcmp
 #include <sys/stat.h> // stat
@@ -73,12 +73,12 @@ bool shutdownHookCheck()
   else
   {
     dirHooks    = "/home/xbmc";
-    cout << "ERROR: homeDirectory var is undef => using default homeDirectory!!!\n";
+    CLog::Log(LOGERROR,"[shutdownHookCheck] homeDirectory var is undef => using default homeDirectory!!!");
   }
 
   dirHooks    +=  "/xbmcShutdownHooks/hooks-enabled/";
 
-  //cout << "DEBUG: >>>" << dirHooks << "<<<<<\n";
+  CLog::Log(LOGDEBUG,"[shutdownHookCheck] dirHooks:>>%s<<", dirHooks.c_str());
 /*
 //////////////////////////////////////////////////
 */
@@ -88,13 +88,14 @@ bool shutdownHookCheck()
   if(!dir)
   {
     CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, "shutdown-hook: " + dirHooks, "failed to open hooks directory, shutdown anyway");
+    CLog::Log(LOGWARNING,"[shutdownHookCheck] dirHooks (%s) failed to open hooks directory, shutdown anyway", dirHooks.c_str());
     return true;    // return true because: a missing shutdown hook dir should't be a reason to abort exit/shutdown
   }
 
   while((pdir = readdir(dir)) != NULL)
   {
 
-//    cout << "shutdownStopped: >" << shutdownStopped << "<\n";   // debug
+    CLog::Log(LOGDEBUG,"[shutdownHookCheck] shutdownStopped:>>%i<<", shutdownStopped);
 
     if(!strcmp(pdir->d_name, "."))          continue;
     if(!strcmp(pdir->d_name, ".."))         continue;
@@ -106,11 +107,12 @@ bool shutdownHookCheck()
     string scriptName   = pdir->d_name;
     string combinedCmd  = dirHooks+scriptName;
 
-//    cout << "scriptName: " << pdir->d_name << "\n";   // debug
+    CLog::Log(LOGDEBUG,"[shutdownHookCheck] scriptName:>>%s<<", scriptName.c_str());
 
     if(!fileIsExecutable(combinedCmd))
     {
       CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, "shutdown-hook-check: ", scriptName + ": can NOT be executed");
+      CLog::Log(LOGERROR,"[shutdownHookCheck] %s : can NOT be executed", scriptName.c_str());
       return false;
     }
 
@@ -120,13 +122,15 @@ bool shutdownHookCheck()
     if(exitCode == 0)
     {
       CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, "shutdown-hook-check: ", scriptName + ": ok");
+      CLog::Log(LOGINFO,"[shutdownHookCheck] %s: ok", scriptName.c_str());
     }
     else
     {
       shutdownStopped = 1;
-//      cout << "setting shutdownStopped to 1 !!!\n";   // debug
+      CLog::Log(LOGDEBUG,"[shutdownHookCheck] setting shutdownStopped to 1 !!!");
 
       CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, "shutdown-hook-check: ", "shutdown stopped by " + scriptName);
+      CLog::Log(LOGINFO,"[shutdownHookCheck] shutdown stopped by %s", scriptName.c_str());
 
       closedir(dir);
       return false;
