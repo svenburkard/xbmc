@@ -15,18 +15,10 @@
 
 // xbmc includes
 #include "dialogs/GUIDialogKaiToast.h"
+#include "filesystem/SpecialProtocol.h"
+
 
 using namespace std;
-
-
-////////////////////////////////////////////////////////
-char* getHomeDirectory()
-{
-////////////////////////////////////////////////////////
-  char *h=getenv("HOME");
-
-  return h;
-}
 
 
 ////////////////////////////////////////////////////////
@@ -57,6 +49,7 @@ bool shutdownHookCheck()
   DIR*      dir;
   dirent*   pdir;
   int       shutdownStopped = 0;
+  string    dirHome;
   string    dirHooks;
 
 /*
@@ -64,19 +57,13 @@ bool shutdownHookCheck()
   create a path-variable of the hook scripts dir
 //////////////////////////////////////////////////
 */
-  char* homeDirectory = getHomeDirectory();
+  dirHome   = CSpecialProtocol::TranslatePath("special://home/").c_str();
 
-  if(homeDirectory != NULL)
-  {
-    dirHooks    = homeDirectory;
-  }
-  else
-  {
-    dirHooks    = "/home/xbmc";
-    CLog::Log(LOGERROR,"[shutdownHookCheck] homeDirectory var is undef => using default homeDirectory!!!");
-  }
+  CLog::Log(LOGDEBUG,"[shutdownHookCheck] dirHome:>>%s<<", dirHome.c_str());
 
-  dirHooks    +=  "/xbmcShutdownHooks/hooks-enabled/";
+
+  dirHooks  += dirHome;
+  dirHooks  += "../xbmcShutdownHooks/hooks-enabled/";
 
   CLog::Log(LOGDEBUG,"[shutdownHookCheck] dirHooks:>>%s<<", dirHooks.c_str());
 /*
@@ -87,8 +74,8 @@ bool shutdownHookCheck()
 
   if(!dir)
   {
-    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, "shutdown-hook: " + dirHooks, "failed to open hooks directory, shutdown anyway");
-    CLog::Log(LOGWARNING,"[shutdownHookCheck] dirHooks (%s) failed to open hooks directory, shutdown anyway", dirHooks.c_str());
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, "shutdown-hook: " + dirHooks, "hooks directory couldn't be opened, shutdown anyway");
+    CLog::Log(LOGWARNING,"[shutdownHookCheck] hooks directory (dirHooks: %s) couldn't be opened, shutdown anyway", dirHooks.c_str());
     return true;    // return true because: a missing shutdown hook dir should't be a reason to abort exit/shutdown
   }
 
