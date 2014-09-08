@@ -22,6 +22,7 @@ SRCS=Application.cpp \
      PlayListPlayer.cpp \
      PartyModeManager.cpp \
      SectionLoader.cpp \
+     shutdownHookCheck.cpp \
      SystemGlobals.cpp \
      Temperature.cpp \
      TextureCache.cpp \
