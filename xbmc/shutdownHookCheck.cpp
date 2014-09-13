@@ -7,11 +7,12 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // system includes
-#include <cstdlib>    // system / getenv
-//#include <iostream>   // cout
-#include <dirent.h>   // dir...
-#include <string.h>   // strcmp
-#include <sys/stat.h> // stat
+#include <cstdlib>          // system / getenv
+//#include <iostream>         // cout
+#include <dirent.h>         // dir...
+#include <string.h>         // strcmp
+#include <sys/stat.h>       // stat
+#include <libxml/parser.h>
 
 // xbmc includes
 #include "utils/log.h"
@@ -39,6 +40,98 @@ bool fileIsExecutable(const string file)
     return true;
   }
 
+  return false;
+}
+
+
+////////////////////////////////////////////////////////
+bool parseSetting(xmlDocPtr doc, xmlNodePtr cur, string settingKey)
+{
+////////////////////////////////////////////////////////
+
+  xmlChar *settingValue;
+
+  cur = cur->xmlChildrenNode;
+
+  while(cur != NULL)
+  {
+    if((!xmlStrcmp(cur->name, (const xmlChar *)settingKey.c_str())))
+    {
+
+      settingValue = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+
+      if(strcmp((const char *)settingValue, "true") == 0)
+      {
+        xmlFree(settingValue);
+        return true;
+      }
+      else
+      {
+        xmlFree(settingValue);
+        return false;
+      }
+    }
+    cur = cur->next;
+  }
+
+  return false;
+}
+
+
+////////////////////////////////////////////////////////
+bool CshutdownHookCheck::isEnabled()
+{
+////////////////////////////////////////////////////////
+
+  string dirHome          = CSpecialProtocol::TranslatePath("special://home/").c_str();
+  string settingsFile     = dirHome + "/userdata/guisettings.xml";
+  string settingCategory  = "shutdownHookCheck";
+  string settingKey       = "enabled";
+
+  xmlDocPtr doc;
+  xmlNodePtr cur;
+
+  CLog::Log(LOGDEBUG,"[shutdownHookCheck] settingsfile:>>%s<<", settingsFile.c_str());
+
+  doc = xmlParseFile(settingsFile.c_str());
+
+  if(doc == NULL)
+  {
+    CLog::Log(LOGERROR,"[shutdownHookCheck] parsing of the settingsfile failed (%s)!", settingsFile.c_str());
+    return false;
+  }
+
+  cur = xmlDocGetRootElement(doc);
+
+  if(cur == NULL)
+  {
+    xmlFreeDoc(doc);
+    CLog::Log(LOGERROR,"[shutdownHookCheck] settingsfile (%s) is empty!", settingsFile.c_str());
+    return false;
+  }
+
+  cur = cur->xmlChildrenNode;
+
+  while(cur != NULL)
+  {
+    if((!xmlStrcmp(cur->name, (const xmlChar *)settingCategory.c_str())))
+    {
+      if(parseSetting(doc, cur, settingKey.c_str()))
+      {
+        CLog::Log(LOGDEBUG,"[shutdownHookCheck] is enabled");
+        return true;
+      }
+      else
+      {
+        CLog::Log(LOGDEBUG,"[shutdownHookCheck] is disabled");
+        return false;
+      }
+    }
+    cur = cur->next;
+  }
+
+  xmlFreeDoc(doc);
+  CLog::Log(LOGWARNING,"[shutdownHookCheck] is disabled (because of an ERROR)");
   return false;
 }
 

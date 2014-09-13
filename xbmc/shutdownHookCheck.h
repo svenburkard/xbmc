@@ -10,6 +10,7 @@
 class CshutdownHookCheck
 {
   public:
+    bool isEnabled();
     bool shutdownHookCheck();
 };
 

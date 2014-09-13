@@ -5047,7 +5047,12 @@ msgctxt "#13036"
 msgid "Failed for %s"
 msgstr ""
 
-#empty strings from id 13037 to 13049
+#: system/settings/settings.xml
+msgctxt "#13037"
+msgid "Enable shutdownHookCheck"
+msgstr ""
+
+#empty strings from id 13038 to 13049
 
 #: xbmc\powermanagement\PowerManager.cpp
 msgctxt "#13050"
@@ -6694,7 +6699,12 @@ msgctxt "#14101"
 msgid "Acceleration"
 msgstr ""
 
-#empty strings from id 14102 to 15011
+#: system/settings/settings.xml
+msgctxt "#14102"
+msgid "ShutdownHookCheck"
+msgstr ""
+
+#empty strings from id 14103 to 15011
 
 #: xbmc/video/VideoDatabase.cpp
 msgctxt "#15012"
@@ -15107,7 +15117,12 @@ msgctxt "#36419"
 msgid "Define locations used for retrieving weather information."
 msgstr ""
 
-#empty string with id 36420
+#. Description of setting "System -> Power saving -> enable shutdownHookCheck" with label #13037
+#: system/settings/settings.xml
+msgctxt "#36420"
+msgid "Custom scripts will be executed automatic right before shutdown/exit/hibernate/...\nand if one of the scripts exits with an exit-code not 0, the shutdown/exit/hibernate/...\nprocess will be stopped."
+msgstr ""
+
 
 #. Description of setting "Videos -> Playback -> Prefer VDPAU Video Mixer" with label #13437
 #: system/settings/settings.xml
@@ -15170,7 +15185,13 @@ msgctxt "#36431"
 msgid "Defines whether video decoding should be performed in software (requires more CPU) or with hardware acceleration where possible."
 msgstr ""
 
-#empty strings from id 36432 to 36499
+#. Description of settings category "System -> ShutdownHookCheck" with label #14102
+#: system/settings/settings.xml
+msgctxt "#36432"
+msgid "Category containing settings for shutdownHookCheck."
+msgstr ""
+
+#empty strings from id 36433 to 36499
 #end reservation
 
 #: system/settings/settings.xml

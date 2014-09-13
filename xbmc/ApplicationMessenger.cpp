@@ -236,35 +236,35 @@ void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
         switch (CSettings::Get().GetInt("powermanagement.shutdownstate"))
         {
           case POWERSTATE_SHUTDOWN:
-            if(CshutdownHookCheck.shutdownHookCheck())
+            if(!(CshutdownHookCheck.isEnabled()) || CshutdownHookCheck.shutdownHookCheck())
             {
               Powerdown();
               break;
             }
 
           case POWERSTATE_SUSPEND:
-            if(CshutdownHookCheck.shutdownHookCheck())
+            if(!(CshutdownHookCheck.isEnabled()) || CshutdownHookCheck.shutdownHookCheck())
             {
               Suspend();
               break;
             }
 
           case POWERSTATE_HIBERNATE:
-            if(CshutdownHookCheck.shutdownHookCheck())
+            if(!(CshutdownHookCheck.isEnabled()) || CshutdownHookCheck.shutdownHookCheck())
             {
               Hibernate();
               break;
             }
 
           case POWERSTATE_QUIT:
-            if(CshutdownHookCheck.shutdownHookCheck())
+            if(!(CshutdownHookCheck.isEnabled()) || CshutdownHookCheck.shutdownHookCheck())
             {
               Quit();
               break;
             }
 
           case POWERSTATE_MINIMIZE:
-            if(CshutdownHookCheck.shutdownHookCheck())
+            if(!(CshutdownHookCheck.isEnabled()) || CshutdownHookCheck.shutdownHookCheck())
             {
               Minimize();
               break;
@@ -279,7 +279,7 @@ void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
 
     case TMSG_POWERDOWN:
       {
-        if(CshutdownHookCheck.shutdownHookCheck())
+        if(!(CshutdownHookCheck.isEnabled()) || CshutdownHookCheck.shutdownHookCheck())
         {
           g_application.Stop(EXITCODE_POWERDOWN);
           g_powerManager.Powerdown();
@@ -289,7 +289,7 @@ void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
 
     case TMSG_QUIT:
       {
-        if(CshutdownHookCheck.shutdownHookCheck())
+        if(!(CshutdownHookCheck.isEnabled()) || CshutdownHookCheck.shutdownHookCheck())
         {
           g_application.Stop(EXITCODE_QUIT);
         }
@@ -298,7 +298,7 @@ void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
 
     case TMSG_HIBERNATE:
       {
-        if(CshutdownHookCheck.shutdownHookCheck())
+        if(!(CshutdownHookCheck.isEnabled()) || CshutdownHookCheck.shutdownHookCheck())
         {
           g_PVRManager.SetWakeupCommand();
           g_powerManager.Hibernate();
@@ -308,7 +308,7 @@ void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
 
     case TMSG_SUSPEND:
       {
-        if(CshutdownHookCheck.shutdownHookCheck())
+        if(!(CshutdownHookCheck.isEnabled()) || CshutdownHookCheck.shutdownHookCheck())
         {
           g_PVRManager.SetWakeupCommand();
           g_powerManager.Suspend();
@@ -319,7 +319,7 @@ void CApplicationMessenger::ProcessMessage(ThreadMessage *pMsg)
     case TMSG_RESTART:
     case TMSG_RESET:
       {
-        if(CshutdownHookCheck.shutdownHookCheck())
+        if(!(CshutdownHookCheck.isEnabled()) || CshutdownHookCheck.shutdownHookCheck())
         {
           g_application.Stop(EXITCODE_REBOOT);
           g_powerManager.Reboot();
